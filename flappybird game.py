@@ -1,8 +1,10 @@
 import pygame
+import random
 pygame.init()
 WIDTH=864
 HEIGHT=800
 TITLE="flappy bird"
+pastpipe=False 
 gameover=False
 flying=False
 pipefreq=2000
@@ -93,9 +95,6 @@ pipegroup=pygame.sprite.Group()
 pipegroup.add(toppipe)
 pipegroup.add(bottompipe)
 
-
-
-
 run=True
 while run:
 
@@ -109,8 +108,9 @@ while run:
         pipegroup.update()
         time_now=pygame.time.get_ticks()
         if time_now-lastpipe>=pipefreq:
-            toppipe=Pipe(pipe,865,250,1)
-            bottompipe=Pipe(pipe,865,450 ,0)
+            y=random.randint(-100,100)
+            toppipe=Pipe(pipe,865,250-y,1)
+            bottompipe=Pipe(pipe,865,450-y,0)
             pipegroup.add(toppipe)
             pipegroup.add(bottompipe)
             lastpipe=time_now 
@@ -119,12 +119,8 @@ while run:
     text=font.render("score="+str(score),True,"yellow")
     screen.blit(text,(0,0))
 
-
-
-    
     floorgroup.draw(screen)
     floor.update() 
-
 
     if flying==True:
         floor.rect.x=floor.rect.x-1
@@ -141,6 +137,11 @@ while run:
         text=font.render("GAMEOVER",True,"red")
         screen.blit(text,(0,400))
 
+    if birdsgroup.sprites()[0].rect.left>pipegroup.sprites()[0].rect.left and birdsgroup.sprites()[0].rect.right<pipegroup.sprites()[0].rect.right and pastpipe==False:
+        pastpipe=True
+    if birdsgroup.sprites()[0].rect.left>pipegroup.sprites()[0].rect.right and pastpipe==True:
+        score=score+1
+        pastpipe=False
 
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
